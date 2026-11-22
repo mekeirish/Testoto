@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no,viewport-fit=cover">
+    <title>Testoto</title>
+    <style>
+body {
+    background:
+        radial-gradient(ellipse at 50% -15%, #41454b 0%, transparent 55%),
+        linear-gradient(145deg, #202226 0%, #292c31 48%, #191b1f 100%);
+    color: #e8e9eb;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    margin: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+#container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
+    padding-bottom: 80px;
+}
+.history-bar {
+    position: sticky;
+    top: 6px;
+    z-index: 50;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 440px;
+    box-sizing: border-box;
+    padding: 5px 8px;
+    margin-bottom: 10px;
+    border: 1px solid #444950;
+    border-top-color: #626871;
+    border-bottom-color: #17191d;
+    border-radius: 12px;
+    background: rgba(32, 34, 38, 0.86);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+.hist-btn {
+    width: 44px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #68717b;
+    border-top-color: #858d97;
+    border-bottom-color: #171a1e;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #555b63 0%, #3b4047 48%, #292d33 100%);
+    color: #f2c45d;
+    font-size: 19px;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease, opacity 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.hist-btn:active:not(:disabled) {
+    transform: translateY(1px);
+    filter: brightness(0.8);
+}
+.hist-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+.add-row-btn {
+    width: 42px;
+    height: 42px;
+    margin: 4px auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #858d97;
+    border-top-color: #b2bac3;
+    border-bottom-color: #171a1e;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #555b63 0%, #3b4047 48%, #292d33 100%);
+    color: #f2c45d;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.12s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.add-row-btn:active {
+    transform: translateY(2px);
+    filter: brightness(0.82);
+}
+.row {
+    display: grid;
+    grid-template-columns: 30px 40px 40px 40px 40px 40px 40px 40px;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    padding: 9px;
+    border: 1px solid #444950;
+    border-top-color: #626871;
+    border-bottom-color: #17191d;
+    border-radius: 13px;
+    background: linear-gradient(155deg, #34383e 0%, #25282d 55%, #202328 100%);
+}
+.drag-handle {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    align-self: center;
+    justify-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    border: 1px solid #68717b;
+    border-top-color: #858d97;
+    border-bottom-color: #171a1e;
+    border-radius: 8px;
+    background: linear-gradient(145deg, #4a5058 0%, #30353b 100%);
+    color: #d6a94b;
+    font-size: 18px;
+    line-height: 1;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.drag-handle:active {
+    cursor: grabbing;
+    filter: brightness(0.85);
+}
+.drag-handle.locked {
+    opacity: 0.28;
+    cursor: default;
+    touch-action: auto;
+}
+.row.dragging {
+    transition: none !important;
+    position: relative;
+    z-index: 30;
+    border-color: #d6a94b;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
+    will-change: transform;
+}
+.is-reordering .row:not(.dragging) {
+    transition: transform 0.18s ease;
+}
+.is-reordering,
+.is-reordering * {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grabbing;
+}
+.btn {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(145deg, #555b63 0%, #3b4047 48%, #292d33 100%);
+    border: 1px solid #68717b;
+    border-top-color: #858d97;
+    border-bottom-color: #171a1e;
+    color: #f0f1f2;
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.6em;
+    font-weight: 600;
+    background-size: cover;
+    background-position: center;
+    box-sizing: border-box;
+    transition: background 0.16s ease, border-color 0.16s ease, transform 0.12s ease, color 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.btn:active {
+    background: linear-gradient(145deg, #25292e, #3b4047);
+    border-color: #252a30;
+    border-top-color: #202328;
+    border-bottom-color: #626a73;
+    transform: translateY(1px);
+}
+.delete-btn {
+    background: linear-gradient(145deg, #e35b63 0%, #b92f3b 55%, #85202b 100%);
+    border-color: #f0787e;
+    border-top-color: #ff9a9e;
+    border-bottom-color: #681923;
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.delete-btn:active {
+    background: linear-gradient(145deg, #8d202b, #bd3540);
+    border-color: #8d202b;
+}
+.son-rempli {
+    background: linear-gradient(145deg, #39965c 0%, #247443 55%, #185432 100%) !important;
+    color: #fff !important;
+    border-color: #65bd80 !important;
+    border-top-color: #8cdaa2 !important;
+    border-bottom-color: #124326 !important;
+}
+.texte-rempli {
+    background: linear-gradient(145deg, #f4bd4c 0%, #d99120 55%, #a9680e 100%) !important;
+    color: #292014 !important;
+    border-color: #ffdc83 !important;
+    border-top-color: #ffebad !important;
+    border-bottom-color: #88500a !important;
+    font-weight: bold !important;
+}
+.action-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    margin-top: 22px;
+    width: 100%;
+}
+#playBtn, #ambianceBtn, #undoBtn, #resetBtn {
+    height: 32px;
+    min-height: 0;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-sizing: border-box;
+    border: 1px solid #747b83;
+    border-top-color: #a0a6ad;
+    border-bottom-color: #17191c;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: pointer;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.13), transparent 48%, rgba(0,0,0,0.12));
+    transition: transform 0.13s ease, filter 0.13s ease, border-color 0.13s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+#playBtn:active, #ambianceBtn:active, #undoBtn:active, #resetBtn:active {
+    transform: translateY(2px);
+    filter: brightness(0.88);
+    border-top-color: #34383d;
+    border-bottom-color: #8b929a;
+}
+#playBtn {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 104px;
+    text-transform: uppercase;
+    background-color: #247c46;
+    background-image: linear-gradient(180deg, #50b875 0%, #27874b 48%, #176035 100%);
+    border-color: #64c786;
+    border-top-color: #9ce5b2;
+    border-bottom-color: #104527;
+    box-shadow: 0 2px 10px rgba(80, 184, 117, 0.35);
+}
+#playBtn::before {
+    content: "▶";
+    font-size: 0.85em;
+}
+#ambianceBtn {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 104px;
+    background-color: #6240a6;
+    background-image: linear-gradient(180deg, #9875d6 0%, #704bb5 48%, #4c2d88 100%);
+    border-color: #987bd0;
+    border-top-color: #c2a9ed;
+    border-bottom-color: #38205f;
+    box-shadow: 0 2px 10px rgba(152, 117, 214, 0.35);
+}
+#ambianceBtn::before {
+    content: "♪";
+    font-size: 1em;
+}
+#undoBtn {
+    background-color: #bd871c;
+    background-image: linear-gradient(180deg, #ffdc6a 0%, #e8ad2e 48%, #b87912 100%);
+    border-color: #f3c85c;
+    border-top-color: #ffec9c;
+    border-bottom-color: #88540b;
+    color: #292014;
+}
+#resetBtn {
+    flex: 0 0 auto;
+    width: 44px;
+    padding: 0;
+    font-size: 16px;
+    letter-spacing: 0;
+    background-color: #b52e3a;
+    background-image: linear-gradient(180deg, #ed6870 0%, #c63846 48%, #92212e 100%);
+    border-color: #ed747c;
+    border-top-color: #ffabb0;
+    border-bottom-color: #681923;
+}
+.action-row {
+    display: flex;
+    gap: 9px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+        
+.fullscreen-mode {
+    background-color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+.fullscreen-mode #container, .fullscreen-mode .action-btns, .fullscreen-mode .history-bar {
+    display: none !important;
+}
+        
+#bgDisplay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: none;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(1);
+}
+        
+#textDisplay {
+    display: none;
+    position: fixed;
+    bottom: 12vh;
+    left: 5vw;
+    z-index: 2;
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: min(88vw, 620px);
+    padding: 10px 16px 11px 15px;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", system-ui, sans-serif;
+    font-size: clamp(1rem, 3.4vw, 1.5rem);
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: 0.015em;
+    text-align: left;
+    color: #fbf8f0;
+    background: linear-gradient(100deg, rgba(14, 15, 17, 0.86), rgba(14, 15, 17, 0.62));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 3px solid #d6a94b;
+    border-radius: 6px 12px 12px 6px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    overflow-wrap: break-word;
+    font-kerning: normal;
+    font-variant-ligatures: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    transition: border-color 0.65s ease, box-shadow 0.65s ease;
+}
+#textDisplay.has-text {
+    display: block;
+}
+#textDisplay.flip-pulse {
+    border-left-color: #ffe9a8;
+    box-shadow: 0 0 22px rgba(214, 169, 75, 0.45);
+}
+#titleDisplay {
+    position: fixed;
+    top: 7vh;
+    left: 50%;
+    z-index: 2;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: 90vw;
+    padding: 0 12px;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", system-ui, sans-serif;
+    font-size: clamp(1.5rem, 6.2vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: 0.05em;
+    text-align: center;
+    text-wrap: balance;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75), 0 0 26px rgba(0, 0, 0, 0.7);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -8px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+#titleDisplay:empty {
+    display: none;
+}
+#titleDisplay.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+.letter {
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+}
+.letter.on {
+    opacity: 1;
+}
+.word {
+    display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+        
+#modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(8, 9, 11, 0.91);
+    backdrop-filter: blur(9px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+#modal .modal-box {
+    width: 100%;
+    max-width: 440px;
+    background: linear-gradient(150deg, #383b40 0%, #282b30 48%, #202328 100%);
+    border: 1px solid #555b63;
+    border-top-color: #858b93;
+    border-bottom-color: #15171a;
+    border-radius: 15px;
+    padding: 18px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+#modal .modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+}
+#txtInput {
+    width: 100%;
+    min-height: 130px;
+    max-height: 45vh;
+    resize: vertical;
+    background: linear-gradient(155deg, #17191d, #22252a);
+    color: #f3f1eb;
+    border: 1px solid #555b63;
+    border-top-color: #30343a;
+    border-bottom-color: #777e87;
+    border-radius: 9px;
+    padding: 11px 12px;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.5;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+#txtInput:focus {
+    border-color: #d6a94b;
+    background: linear-gradient(155deg, #1d1f23, #292a2c);
+}
+#titleInput {
+    width: 100%;
+    height: 42px;
+    background: linear-gradient(155deg, #17191d, #22252a);
+    color: #f3f1eb;
+    border: 1px solid #555b63;
+    border-top-color: #30343a;
+    border-bottom-color: #777e87;
+    border-radius: 9px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+#titleInput:focus {
+    border-color: #d6a94b;
+    background: linear-gradient(155deg, #1d1f23, #292a2c);
+}
+#modal .modal-label {
+    margin-bottom: -8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #aeb4bc;
+}
+#modal button {
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid #737a83;
+    border-top-color: #a0a6ad;
+    border-bottom-color: #191b1f;
+    background: linear-gradient(180deg, #555b63 0%, #3b4047 52%, #292d33 100%);
+    color: #f5f5f3;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.13s ease, filter 0.13s ease;
+}
+#modal button:active {
+    transform: translateY(2px);
+    filter: brightness(0.85);
+}
+footer {
+    position: fixed;
+    bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    z-index: 10000;
+}
+footer img {
+    width: 40px;
+    cursor: pointer;
+    opacity: 0.5;
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.35)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7));
+    transition: opacity 0.2s ease, transform 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+footer img:active {
+    opacity: 0.95;
+    transform: scale(0.94);
+}
+.footer-sign {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: rgba(232, 233, 235, 0.4);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.fullscreen-mode .footer-sign {
+    display: none;
+}
+#toast {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 90vw;
+    padding: 9px 16px;
+    border-radius: 10px;
+    border: 1px solid #626871;
+    background: linear-gradient(145deg, #42474e, #22262b);
+    color: #f2f3f4;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    z-index: 10001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+#toast.show {
+    opacity: 1;
+}
+        /* Ajustement pour très petits écrans */
+        @media (max-width: 480px) {
+.btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.55em;
+}
+.row {
+    grid-template-columns: 28px 36px 36px 36px 36px 36px 36px 36px;
+    gap: 6px;
+    padding: 7px;
+}
+#playBtn, #ambianceBtn {
+    font-size: 0.66rem;
+    padding: 0 6px;
+}
+        }
+    </style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4b6cb7">
+<link rel="apple-touch-icon" href="icon.png"><meta property="og:title" content="Testoto">
+<meta name="twitter:title" content="Testoto">
+<meta name="application-name" content="Testoto">
+<meta name="apple-mobile-web-app-title" content="Testoto">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon.png">
+<meta property="og:image" content="https://mekeirish.github.io/Testoto/icon.png">
+<meta name="twitter:image" content="https://mekeirish.github.io/Testoto/icon.png">
+<meta name="twitter:card" content="summary">
+<meta property="og:url" content="https://mekeirish.github.io/Testoto/">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1320x2868.png">
+<link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1206x2622.png">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="./splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="./splash-1242x2208.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="./splash-750x1334.png">
+<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="./splash-640x1136.png">
+</head>
+<body>
+
+<div class="history-bar">
+    <button type="button" id="ambianceBtn" onclick="handleAmbiance()">Ambiance</button>
+    <button type="button" class="hist-btn" id="undoTopBtn" onclick="undoLastAction()" aria-label="Annuler" title="Annuler" disabled>↶</button>
+    <button type="button" id="resetBtn" onclick="resetConfirm()" aria-label="Réinitialiser" title="Réinitialiser">🗑️</button>
+    <button type="button" class="hist-btn" id="redoTopBtn" onclick="redoLastAction()" aria-label="Reprendre" title="Reprendre" disabled>↷</button>
+    <button type="button" id="playBtn" onclick="lancerSequence()">PLAY</button>
+</div>
+    <div id="bgDisplay" ondblclick="exitApp(event)"><div id="textDisplay"></div>
+<div id="titleDisplay"></div>
+</div>
+    <div id="container"></div>
+    
+    <div id="modal">
+        <div class="modal-box">
+            <label class="modal-label" for="titleInput">Titre (haut de l'écran, fondu)</label>
+            <input type="text" id="titleInput" placeholder="Titre court" maxlength="80" autocomplete="off">
+            <label class="modal-label" for="txtInput">Légende (bas de l'écran, effet machine à écrire)</label>
+            <textarea id="txtInput" placeholder="Saisir ou coller la légende..."></textarea>
+            <div class="modal-actions">
+                <button type="button" onclick="collerTexte()">Coller</button>
+                <button type="button" onclick="validerTexte()">Valider</button>
+                <button type="button" onclick="document.getElementById('modal').style.display='none'">Fermer</button>
+            </div>
+        </div>
+    </div>
+    
+
+    <footer>
+        <img src="https://i.ibb.co/VWpZCsDr/dfg-1.png" alt="dfg-1" oncontextmenu="exitApp(event)">
+        <span class="footer-sign">Made by Laiche Brahim 2026</span>
+    </footer>
+    <div id="toast"></div>
+
+    <script>
+        let sequences = [];       // chaque élément: { id, mode, text, imgKey, audioKey, imgUrl, audioUrl, audio }
+        let ambianceAudio = null;
+        let currentAudio = null;
+        let activeId = null;
+        let typingTimeout = null;
+        let isPlaying = false;
+        let sequenceAborted = false;
+        
+        // Historique
+        let historyStack = [];
+let redoStack = [];
+let historyBusy = false;
+        let historyIndex = -1;
+        let pendingReset = false;
+        let resetTimer = null;
+
+        // IndexedDB
+        const DB_NAME = 'MultimediaAppDB';
+        const STORE_NAME = 'media';
+        let db = null;
+let toastTimer = null;
+function showToast(msg) {
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve();
+                };
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+            });
+        }
+
+        async function storeBlob(blob, type) {
+            if (!db) await openDB();
+            const key = `${type}_${Date.now()}_${Math.random()}`;
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.put(blob, key);
+                request.onsuccess = () => resolve(key);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function getBlob(key) {
+            if (!db) await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.get(key);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function deleteBlob(key) {
+            if (!db) await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.delete(key);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+async function purgeOrphanBlobs() {
+    if (!db) await openDB();
+    const used = new Set();
+    for (const seq of sequences) {
+        if (seq.imgKey) used.add(seq.imgKey);
+        if (seq.audioKey) used.add(seq.audioKey);
+    }
+    const ambianceKey = localStorage.getItem('multimediaAppAmbianceKey');
+    if (ambianceKey) used.add(ambianceKey);
+    const keys = await new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const request = tx.objectStore(STORE_NAME).getAllKeys();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+    for (const key of keys) {
+        if (!used.has(key)) await deleteBlob(key);
+    }
+}
+
+        async function saveToLocalStorage() {
+            const saveData = sequences.map(seq => ({
+                id: seq.id,
+                mode: seq.mode,
+                title: seq.title || "",
+                text: seq.text,
+                imgKey: seq.imgKey || null,
+                audioKey: seq.audioKey || null,
+                audioUrl: seq.audioUrl || null
+            }));
+            localStorage.setItem('multimediaApp', JSON.stringify(saveData));
+        }
+
+        async function loadFromLocalStorage() {
+            const savedAmbianceUrl = localStorage.getItem('multimediaAppAmbianceUrl');
+            const savedAmbianceKey = localStorage.getItem('multimediaAppAmbianceKey');
+            let ambianceSrc = savedAmbianceUrl;
+            if (!ambianceSrc && savedAmbianceKey) {
+                const ambianceBlob = await getBlob(savedAmbianceKey);
+                if (ambianceBlob) ambianceSrc = URL.createObjectURL(ambianceBlob);
+            }
+            if (ambianceSrc) setAmbiance(ambianceSrc);
+            const data = localStorage.getItem('multimediaApp');
+            if (!data) return false;
+            try {
+                const loaded = JSON.parse(data);
+                if (!Array.isArray(loaded)) return false;
+                document.getElementById('container').innerHTML = '';
+                sequences = [];
+                for (let item of loaded) {
+                    const seq = {
+                        id: item.id,
+                        mode: item.mode || "3",
+                        title: item.title || "",
+                        text: item.text || "",
+                        imgKey: item.imgKey,
+                        audioKey: item.audioKey,
+                        imgUrl: null,
+                        audioUrl: item.audioUrl || null,
+                        audio: null
+                    };
+                    if (seq.imgKey) {
+                        const blob = await getBlob(seq.imgKey);
+                        if (blob) {
+                            seq.imgUrl = URL.createObjectURL(blob);
+                        }
+                    }
+                    if (seq.audioKey) {
+                        const blob = await getBlob(seq.audioKey);
+                        if (blob) {
+                            seq.audioUrl = URL.createObjectURL(blob);
+                            seq.audio = new Audio(seq.audioUrl);
+                        }
+                    } else if (seq.audioUrl) {
+                        seq.audio = new Audio(seq.audioUrl);
+                    }
+                    sequences.push(seq);
+                }
+                rebuildDOM();
+                if (sequences.length === 0 || sequences[sequences.length - 1].imgUrl !== null) {
+                    createRow();
+                }
+                smartSplitAmbiance();
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function rebuildDOM() {
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+            const filledIndices = [];
+            for (let i = 0; i < sequences.length; i++) {
+                if (sequences[i] && sequences[i].imgUrl) {
+                    filledIndices.push(i);
+                }
+            }
+            const firstFilledIdx = filledIndices.length > 0 ? filledIndices[0] : -1;
+            const lastFilledIdx = filledIndices.length > 0 ? filledIndices[filledIndices.length - 1] : -1;
+            sequences.forEach((seq, idx) => {
+                seq.id = idx;
+                const dur = Math.round((parseFloat(seq.mode) || 3) * 100) / 100;
+                seq.mode = String(dur);
+                const isFilled = !!seq.imgUrl;
+                const isIntro = isFilled && idx === firstFilledIdx;
+                const isOutro = isFilled && idx === lastFilledIdx && filledIndices.length > 1;
+                const isIntroOrOutro = isIntro || isOutro;
+                const roleLabel = isIntro ? 'Intro' : (isOutro ? 'Outro' : '');
+                const row = document.createElement('div');
+                row.className = 'row';
+                row.id = 'row_' + idx;
+                let html = '<button type="button" class="drag-handle' + (isIntroOrOutro ? ' locked' : '') + '" id="btnD' + idx + '" aria-label="' + (isIntroOrOutro ? 'Ligne verrouillée' : 'Déplacer la ligne') + '">≡</button>';
+                if (isIntroOrOutro) {
+                    html += '<button class="btn" id="btnMinus' + idx + '" onclick="adjustDuration(' + idx + ', -1)">-1s</button>';
+                    html += '<button class="btn" id="btnM' + idx + '">' + (roleLabel ? roleLabel + ' ' : '') + dur + 's</button>';
+                    html += '<button class="btn" id="btnPlus' + idx + '" onclick="adjustDuration(' + idx + ', 1)">+1s</button>';
+                } else {
+                    html += '<span></span><button class="btn" id="btnM' + idx + '" onclick="cycleDuration(' + idx + ')">' + dur + 's</button><span></span>';
+                }
+                const hasText = !!((seq.text && seq.text.trim().length > 0) || (seq.title && seq.title.trim().length > 0));
+                html += '<button class="btn' + (hasText ? ' texte-rempli' : '') + '" id="btnT' + idx + '" onclick="ouvrirModal(' + idx + ')">TXT</button>';
+                const bgStyle = seq.imgUrl ? 'background-image: url(' + seq.imgUrl + ')' : '';
+                html += '<button class="btn" id="btnI' + idx + '" onclick="document.getElementById(\'i' + idx + '\').click()" style="' + bgStyle + '"></button>';
+                html += '<button class="btn" id="btnA' + idx + '" onclick="pasteAudioUrl(' + idx + ')">🔊</button>';
+                html += '<button class="btn delete-btn" onclick="deleteRow(' + idx + ')">✖</button>';
+                html += '<input type="file" id="i' + idx + '" accept="image/*" multiple style="display:none" onchange="handleFile(this, ' + idx + ', \'img\')">';
+                row.innerHTML = html;
+                if (seq.audio || seq.audioUrl) {
+                    const btnA = row.querySelector('#btnA' + idx);
+                    if (btnA) btnA.classList.add('son-rempli');
+                }
+                container.appendChild(row);
+            });
+
+            const addButton = document.createElement('button');
+            addButton.type = 'button';
+            addButton.className = 'add-row-btn';
+            addButton.textContent = '+';
+            addButton.setAttribute('aria-label', 'Créer une nouvelle ligne');
+            addButton.onclick = () => createRow(true);
+            container.appendChild(addButton);
+        }
+
+        function addRowToDOM(seq) {
+            const id = seq.id;
+            const dur = Math.round((parseFloat(seq.mode) || 3) * 100) / 100;
+            seq.mode = String(dur);
+            const filledIndices = [];
+            for (let i = 0; i < sequences.length; i++) {
+                if (sequences[i] && sequences[i].imgUrl) {
+                    filledIndices.push(i);
+                }
+            }
+            const firstFilledIdx = filledIndices.length > 0 ? filledIndices[0] : -1;
+            const lastFilledIdx = filledIndices.length > 0 ? filledIndices[filledIndices.length - 1] : -1;
+            const isFilled = !!seq.imgUrl;
+            const isIntro = isFilled && id === firstFilledIdx;
+            const isOutro = isFilled && id === lastFilledIdx && filledIndices.length > 1;
+            const isIntroOrOutro = isIntro || isOutro;
+            const roleLabel = isIntro ? 'Intro' : (isOutro ? 'Outro' : '');
+            const row = document.createElement('div');
+            row.className = 'row';
+            row.id = 'row_' + id;
+            let html = '';
+            if (isIntroOrOutro) {
+                html += '<button class="btn" id="btnMinus' + id + '" onclick="adjustDuration(' + id + ', -1)">-1s</button>';
+                html += '<button class="btn" id="btnM' + id + '">' + (roleLabel ? roleLabel + ' ' : '') + dur + 's</button>';
+                html += '<button class="btn" id="btnPlus' + id + '" onclick="adjustDuration(' + id + ', 1)">+1s</button>';
+            } else {
+                html += '<span></span><button class="btn" id="btnM' + id + '" onclick="cycleDuration(' + id + ')">' + dur + 's</button><span></span>';
+            }
+            const hasText = !!((seq.text && seq.text.trim().length > 0) || (seq.title && seq.title.trim().length > 0));
+            html += '<button class="btn' + (hasText ? ' texte-rempli' : '') + '" id="btnT' + id + '" onclick="ouvrirModal(' + id + ')">TXT</button>';
+            const bgStyle = seq.imgUrl ? 'background-image: url(' + seq.imgUrl + ')' : '';
+            html += '<button class="btn" id="btnI' + id + '" onclick="document.getElementById(\'i' + id + '\').click()" style="' + bgStyle + '"></button>';
+            html += '<button class="btn" id="btnA' + id + '" onclick="pasteAudioUrl(' + id + ')">🔊</button>';
+            html += '<button class="btn delete-btn" onclick="deleteRow(' + id + ')">✖</button>';
+            html += '<input type="file" id="i' + id + '" accept="image/*" multiple style="display:none" onchange="handleFile(this, ' + id + ', \'img\')">';
+            row.innerHTML = html;
+            if (seq.audio || seq.audioUrl) {
+                const btnA = row.querySelector('#btnA' + id);
+                if (btnA) btnA.classList.add('son-rempli');
+            }
+            rebuildDOM();
+        }
+
+        function createRow(addNew = false) {
+            if (!addNew) {
+                rebuildDOM();
+                return;
+            }
+
+            if (isPlaying) return;
+
+            pushToHistory();
+            const id = getInsertIndex();
+            const newSeq = {
+                id: id,
+                mode: "3",
+                title: "",
+                text: "",
+                imgKey: null,
+                audioKey: null,
+                imgUrl: null,
+                audioUrl: null,
+                audio: null
+            };
+            sequences.splice(id, 0, newSeq);
+            rebuildDOM();
+            smartSplitAmbiance();
+            saveToLocalStorage();
+        }
+function getInsertIndex() {
+    // Avec au moins 2 lignes remplies (intro + outro), une nouvelle ligne s'insère juste au-dessus de l'outro
+    let last = -1;
+    let count = 0;
+    for (let i = 0; i < sequences.length; i++) {
+        if (sequences[i] && sequences[i].imgUrl) {
+            last = i;
+            count++;
+        }
+    }
+    return count >= 2 ? last : sequences.length;
+}
+function getReorderBounds(from) {
+    // Retourne les positions d'insertion autorisées (indices après retrait de la ligne), ou null si la ligne est verrouillée
+    const filled = [];
+    for (let i = 0; i < sequences.length; i++) {
+        if (sequences[i] && sequences[i].imgUrl) filled.push(i);
+    }
+    const n = sequences.length - 1;
+    if (filled.length === 0) return { min: 0, max: n };
+    const first = filled[0];
+    const last = filled[filled.length - 1];
+    if (from === first) return null;
+    if (filled.length > 1 && from === last) return null;
+    const shift = (i) => (i > from ? i - 1 : i);
+    const min = shift(first) + 1;
+    const max = filled.length > 1 ? shift(last) : n;
+    return { min: min, max: max };
+}
+function initDragReorder() {
+    const container = document.getElementById('container');
+    if (!container) return;
+    let drag = null;
+
+    function update() {
+        if (!drag) return;
+        const dy = (drag.lastClientY - drag.startY) + (window.scrollY - drag.scrollY0);
+        drag.rowEl.style.transform = 'translateY(' + dy + 'px)';
+        const center = drag.docCenter[drag.from] + dy;
+        let p = 0;
+        for (let j = 0; j < drag.rows.length; j++) {
+            if (j !== drag.from && drag.docCenter[j] < center) p++;
+        }
+        p = Math.max(drag.bounds.min, Math.min(drag.bounds.max, p));
+        drag.target = p;
+        for (let j = 0; j < drag.rows.length; j++) {
+            if (j === drag.from) continue;
+            const jp = j > drag.from ? j - 1 : j;
+            const fin = jp < p ? jp : jp + 1;
+            const shift = (fin - j) * drag.step;
+            drag.rows[j].style.transform = shift ? 'translateY(' + shift + 'px)' : '';
+        }
+    }
+
+    function tick() {
+        if (!drag) return;
+        const edge = 80;
+        let speed = 0;
+        if (drag.lastClientY < edge) {
+            speed = -Math.min(18, Math.ceil((edge - drag.lastClientY) / 5));
+        } else if (drag.lastClientY > window.innerHeight - edge) {
+            speed = Math.min(18, Math.ceil((drag.lastClientY - (window.innerHeight - edge)) / 5));
+        }
+        if (speed) window.scrollBy(0, speed);
+        update();
+        drag.raf = requestAnimationFrame(tick);
+    }
+
+    function finish(commit) {
+        if (!drag) return;
+        const d = drag;
+        drag = null;
+        cancelAnimationFrame(d.raf);
+        try { d.handle.releasePointerCapture(d.pointerId); } catch (e) {}
+        document.body.classList.remove('is-reordering');
+        d.rows.forEach((r) => {
+            r.style.transform = '';
+            r.classList.remove('dragging');
+        });
+        if (commit && d.target !== d.from && sequences[d.from]) {
+            pushToHistory();
+            const moved = sequences.splice(d.from, 1)[0];
+            sequences.splice(d.target, 0, moved);
+            rebuildDOM();
+            saveToLocalStorage();
+        }
+    }
+
+    container.addEventListener('contextmenu', (e) => {
+        if (e.target.closest && e.target.closest('.drag-handle')) e.preventDefault();
+    });
+
+    container.addEventListener('pointerdown', (e) => {
+        const handle = e.target.closest ? e.target.closest('.drag-handle') : null;
+        if (!handle || drag || isPlaying) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        if (handle.classList.contains('locked')) {
+            showToast("Intro et Outro restent à leur place");
+            return;
+        }
+        const rowEl = handle.closest('.row');
+        const rows = Array.from(container.querySelectorAll('.row'));
+        const from = rows.indexOf(rowEl);
+        if (from < 0 || rows.length !== sequences.length) return;
+        const bounds = getReorderBounds(from);
+        if (!bounds) return;
+        e.preventDefault();
+        const scrollY0 = window.scrollY;
+        const rects = rows.map((r) => r.getBoundingClientRect());
+        const docCenter = rects.map((r) => r.top + scrollY0 + r.height / 2);
+        const gap = parseFloat(getComputedStyle(container).rowGap) || 12;
+        drag = {
+            pointerId: e.pointerId,
+            handle: handle,
+            rowEl: rowEl,
+            rows: rows,
+            from: from,
+            bounds: bounds,
+            startY: e.clientY,
+            lastClientY: e.clientY,
+            scrollY0: scrollY0,
+            docCenter: docCenter,
+            step: rects[from].height + gap,
+            target: from,
+            raf: null
+        };
+        try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+        document.body.classList.add('is-reordering');
+        rowEl.classList.add('dragging');
+        drag.raf = requestAnimationFrame(tick);
+    });
+
+    container.addEventListener('pointermove', (e) => {
+        if (!drag || e.pointerId !== drag.pointerId) return;
+        drag.lastClientY = e.clientY;
+        update();
+    });
+
+    container.addEventListener('pointerup', (e) => {
+        if (!drag || e.pointerId !== drag.pointerId) return;
+        finish(true);
+    });
+
+    container.addEventListener('pointercancel', (e) => {
+        if (!drag || e.pointerId !== drag.pointerId) return;
+        finish(false);
+    });
+
+    container.addEventListener('lostpointercapture', (e) => {
+        if (!drag || e.pointerId !== drag.pointerId) return;
+        finish(false);
+    });
+
+    window.addEventListener('blur', () => finish(false));
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') finish(false);
+    });
+}
+
+        async function createRowWithImage(blob, insertAt) {
+            pushToHistory();
+            const id = (typeof insertAt === 'number')
+                ? Math.max(0, Math.min(insertAt, sequences.length))
+                : getInsertIndex();
+            const imgKey = await storeBlob(blob, 'img');
+            const imgUrl = URL.createObjectURL(blob);
+            const newSeq = {
+                id: id,
+                mode: "3",
+                title: "",
+                text: "",
+                imgKey: imgKey,
+                audioKey: null,
+                imgUrl: imgUrl,
+                audioUrl: null,
+                audio: null
+            };
+            sequences.splice(Math.min(id, sequences.length), 0, newSeq);
+            addRowToDOM(newSeq);
+            saveToLocalStorage();
+        }
+
+        async function deleteRow(id) {
+            if (isPlaying) return;
+            pushToHistory();
+            const seqToDelete = sequences[id];
+            if (!seqToDelete) return;
+            if (seqToDelete.imgKey) {
+                if (seqToDelete.imgUrl) URL.revokeObjectURL(seqToDelete.imgUrl);
+            }
+            if (seqToDelete.audioKey) {
+                if (seqToDelete.audioUrl) URL.revokeObjectURL(seqToDelete.audioUrl);
+                if (seqToDelete.audio) seqToDelete.audio.pause();
+            } else if (seqToDelete.audio) {
+                seqToDelete.audio.pause();
+            }
+            sequences.splice(id, 1);
+            rebuildDOM();
+            smartSplitAmbiance();
+            saveToLocalStorage();
+        }
+
+        async function removeLastEmptyRow() {
+            if (sequences.length === 0) return false;
+            const last = sequences[sequences.length - 1];
+            if (!last.imgKey && !last.audioKey && last.text === "" && !last.title) {
+                await deleteRow(last.id);
+                return true;
+            }
+            return false;
+        }
+
+        async function handleFile(input, id, type) {
+            if (!input.files || input.files.length === 0) return;
+            const files = Array.from(input.files);
+            
+            if (files.length > 1 && type === 'img') {
+                pushToHistory();
+                const origin = sequences[id];
+                if (origin && !origin.imgKey && !origin.audioKey && !origin.audioUrl
+                    && !(origin.text && origin.text.trim()) && !(origin.title && origin.title.trim())) {
+                    sequences.splice(id, 1);
+                }
+                let pos = getInsertIndex();
+                for (let file of files) {
+                    await createRowWithImage(file, pos);
+                    pos++;
+                }
+                createRow();
+                smartSplitAmbiance();
+                saveToLocalStorage();
+                return;
+            }
+            
+            const file = files[0];
+            if (type === 'img') {
+                pushToHistory();
+                const seq = sequences[id];
+                if (!seq) return;
+                if (seq.imgUrl) URL.revokeObjectURL(seq.imgUrl);
+                const imgKey = await storeBlob(file, 'img');
+                const imgUrl = URL.createObjectURL(file);
+                seq.imgKey = imgKey;
+                seq.imgUrl = imgUrl;
+                createRow();
+                smartSplitAmbiance();
+                saveToLocalStorage();
+            } else if (type === 'audio') {
+                pushToHistory();
+                const seq = sequences[id];
+                if (!seq) return;
+                if (seq.audioUrl && seq.audioUrl.startsWith('blob:')) URL.revokeObjectURL(seq.audioUrl);
+                if (seq.audio) seq.audio.pause();
+                const audioKey = await storeBlob(file, 'audio');
+                const audioUrl = URL.createObjectURL(file);
+                seq.audioKey = audioKey;
+                seq.audioUrl = audioUrl;
+                seq.audio = new Audio(audioUrl);
+                const btnA = document.getElementById('btnA' + id);
+                if (btnA) {
+                    btnA.classList.add('son-rempli');
+                    btnA.innerText = "🔊";
+                }
+                saveToLocalStorage();
+            }
+        }
+        async function pasteAudioUrl(id) {
+            if (isPlaying) return;
+            const seq = sequences[id];
+            if (!seq) return;
+            let clipText = "";
+            try {
+                const rawClip = await navigator.clipboard.readText();
+                clipText = rawClip ? rawClip.trim() : "";
+            } catch (e) {}
+            if (!clipText.startsWith("http://") && !clipText.startsWith("https://")) {
+                showToast("Aucun lien dans le presse-papiers : choisis un fichier audio");
+                pickAudioFile((input) => handleFile(input, id, 'audio'));
+                return;
+            }
+            pushToHistory();
+            if (seq.audioUrl && seq.audioUrl.startsWith("blob:")) {
+                URL.revokeObjectURL(seq.audioUrl);
+            }
+            if (seq.audio) {
+                seq.audio.pause();
+            }
+            seq.audioKey = null;
+            seq.audioUrl = clipText;
+            seq.audio = new Audio(clipText);
+            const btnA = document.getElementById(`btnA${id}`);
+            if (btnA) {
+                btnA.classList.add('son-rempli');
+                btnA.innerText = "🔊";
+            }
+            saveToLocalStorage();
+        }
+
+        async function handleAmbiance() {
+            try {
+                const rawClip = await navigator.clipboard.readText();
+                const clipText = rawClip ? rawClip.trim() : "";
+                if (!clipText.startsWith("http://") && !clipText.startsWith("https://")) {
+                    showToast("Aucun lien dans le presse-papiers : choisis un fichier audio");
+                    pickAudioFile((input) => handleAmbianceFile(input.files[0]));
+                    return;
+                }
+                setAmbiance(clipText);
+                localStorage.setItem('multimediaAppAmbianceUrl', clipText);
+                localStorage.removeItem('multimediaAppAmbianceKey');
+                smartSplitAmbiance();
+            } catch (e) {
+                showToast("Presse-papiers inaccessible : choisis un fichier audio");
+                pickAudioFile((input) => handleAmbianceFile(input.files[0]));
+            }
+        }
+function setAmbiance(src) {
+    if (ambianceAudio) ambianceAudio.pause();
+    ambianceAudio = new Audio(src);
+    ambianceAudio.loop = true;
+    ambianceAudio.preload = "auto";
+    ambianceAudio.addEventListener('loadedmetadata', () => {
+        smartSplitAmbiance();
+        saveToLocalStorage();
+    });
+    const ambianceBtn = document.getElementById('ambianceBtn');
+    if (ambianceBtn) {
+        ambianceBtn.classList.add('son-rempli');
+        ambianceBtn.innerText = "Ambiance OK";
+    }
+}
+async function handleAmbianceFile(file) {
+    if (!file) return;
+    const oldKey = localStorage.getItem('multimediaAppAmbianceKey');
+    const key = await storeBlob(file, 'ambiance');
+    localStorage.setItem('multimediaAppAmbianceKey', key);
+    localStorage.removeItem('multimediaAppAmbianceUrl');
+    if (oldKey) await deleteBlob(oldKey);
+    setAmbiance(URL.createObjectURL(file));
+    smartSplitAmbiance();
+}
+function pickAudioFile(onPick) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/*';
+    input.onchange = () => {
+        if (input.files && input.files.length > 0) onPick(input);
+    };
+    input.click();
+}
+        function smartSplitAmbiance() {
+            const filledIndices = [];
+            for (let i = 0; i < sequences.length; i++) {
+                if (sequences[i] && sequences[i].imgUrl) {
+                    filledIndices.push(i);
+                }
+            }
+            const activeCount = filledIndices.length;
+            if (activeCount === 0) return;
+            const firstFilledIdx = filledIndices[0];
+            const lastFilledIdx = filledIndices[activeCount - 1];
+            const hasAmbiance = !!(ambianceAudio && isFinite(ambianceAudio.duration) && ambianceAudio.duration > 0);
+            // L'ambiance démarre après l'écran noir : aucune durée n'est réservée au noir
+            const blackIntroMs = 0;
+            if (!hasAmbiance) {
+                for (let k = 0; k < filledIndices.length; k++) {
+                    const idx = filledIndices[k];
+                    const durMs = Math.max(100, Math.round((parseFloat(sequences[idx].mode) || 3) * 1000));
+                    const durSec = durMs / 1000;
+                    sequences[idx].mode = String(durSec);
+                    sequences[idx]._exactDurationMs = durMs;
+                    const btn = document.getElementById('btnM' + idx);
+                    if (btn) {
+                        const roleLabel = (idx === firstFilledIdx) ? 'Intro ' : ((idx === lastFilledIdx && activeCount > 1) ? 'Outro ' : '');
+                        btn.innerText = roleLabel + durSec.toFixed(2).replace(/\.?0+$/, '') + 's';
+                    }
+                }
+                return;
+            }
+            const totalMs = Math.max(100, Math.round(ambianceAudio.duration * 1000));
+            const reservedBlackMs = Math.min(blackIntroMs, Math.max(0, totalMs - 100));
+            const remainingAmbianceMs = Math.max(100, totalMs - reservedBlackMs);
+            const fadeStepMs = 350;
+            const totalFadeMs = activeCount > 1 ? ((activeCount - 1) * fadeStepMs) : 0;
+            const usableMs = Math.max(100, remainingAmbianceMs - totalFadeMs);
+            const durationsMs = new Map();
+            if (activeCount === 1) {
+                durationsMs.set(firstFilledIdx, usableMs);
+            } else {
+                let introMs = Math.max(100, Math.round((parseFloat(sequences[firstFilledIdx].mode) || 3) * 1000));
+                let outroMs = Math.max(100, Math.round((parseFloat(sequences[lastFilledIdx].mode) || 3) * 1000));
+                const minReserveMs = 100;
+                if (introMs + outroMs > Math.max(minReserveMs * 2, usableMs - minReserveMs)) {
+                    const budgetIoMs = Math.max(minReserveMs * 2, Math.round(usableMs * 0.6));
+                    const sumIo = Math.max(1, introMs + outroMs);
+                    introMs = Math.max(minReserveMs, Math.round((introMs / sumIo) * budgetIoMs));
+                    outroMs = Math.max(minReserveMs, Math.min(budgetIoMs - introMs, Math.round((outroMs / sumIo) * budgetIoMs)));
+                    if (outroMs < minReserveMs) outroMs = minReserveMs;
+                }
+                const middleIndices = filledIndices.filter(idx => idx !== firstFilledIdx && idx !== lastFilledIdx);
+                const middleCount = middleIndices.length;
+                if (middleCount === 0) {
+                    introMs = Math.max(minReserveMs, Math.min(introMs, usableMs - minReserveMs));
+                    outroMs = Math.max(minReserveMs, usableMs - introMs);
+                    durationsMs.set(firstFilledIdx, introMs);
+                    durationsMs.set(lastFilledIdx, outroMs);
+                } else {
+                    const remainingForMiddleMs = Math.max(middleCount * 50, usableMs - introMs - outroMs);
+                    const baseMiddleMs = Math.floor(remainingForMiddleMs / middleCount);
+                    let remainderMiddleMs = remainingForMiddleMs - (baseMiddleMs * middleCount);
+                    durationsMs.set(firstFilledIdx, introMs);
+                    for (let m = 0; m < middleIndices.length; m++) {
+                        const extra = remainderMiddleMs > 0 ? 1 : 0;
+                        if (remainderMiddleMs > 0) remainderMiddleMs--;
+                        durationsMs.set(middleIndices[m], baseMiddleMs + extra);
+                    }
+                    durationsMs.set(lastFilledIdx, outroMs);
+                }
+            }
+            let assignedSumMs = 0;
+            for (let k = 0; k < filledIndices.length; k++) {
+                const idx = filledIndices[k];
+                let dMs = durationsMs.get(idx) || 100;
+                if (k === filledIndices.length - 1) {
+                    dMs = Math.max(50, usableMs - assignedSumMs);
+                }
+                assignedSumMs += dMs;
+                const dSec = dMs / 1000;
+                sequences[idx].mode = String(dSec);
+                sequences[idx]._exactDurationMs = dMs;
+                const btn = document.getElementById('btnM' + idx);
+                if (btn) {
+                    const roleLabel = (idx === firstFilledIdx) ? 'Intro ' : ((idx === lastFilledIdx && activeCount > 1) ? 'Outro ' : '');
+                    btn.innerText = roleLabel + dSec.toFixed(2).replace(/\.?0+$/, '') + 's';
+                }
+            }
+        }
+
+function captureState() {
+    return sequences.map(seq => ({
+        id: seq.id,
+        mode: seq.mode,
+        title: seq.title || "",
+        text: seq.text,
+        imgKey: seq.imgKey,
+        audioKey: seq.audioKey,
+        audioUrl: seq.audioUrl || null
+    }));
+}
+        function pushToHistory() {
+            if (isPlaying) return;
+            const state = captureState();
+            historyStack.push(state);
+            if (historyStack.length > 50) historyStack.shift();
+            historyIndex = historyStack.length - 1;
+            redoStack = [];
+            updateHistoryButtons();
+        }
+
+        async function restoreFromHistory(state) {
+            if (!state) return;
+            for (let seq of sequences) {
+                if (seq.imgUrl) URL.revokeObjectURL(seq.imgUrl);
+                if (seq.audioUrl && seq.audioUrl.startsWith('blob:')) URL.revokeObjectURL(seq.audioUrl);
+                if (seq.audio) seq.audio.pause();
+            }
+            sequences = [];
+            for (let item of state) {
+                let imgUrl = null;
+                if (item.imgKey) {
+                    const blob = await getBlob(item.imgKey);
+                    if (blob) imgUrl = URL.createObjectURL(blob);
+                }
+                let audioUrl = item.audioUrl || null;
+                let audioObj = null;
+                if (item.audioKey) {
+                    const blob = await getBlob(item.audioKey);
+                    if (blob) {
+                        audioUrl = URL.createObjectURL(blob);
+                        audioObj = new Audio(audioUrl);
+                    }
+                } else if (audioUrl) {
+                    audioObj = new Audio(audioUrl);
+                }
+                const seq = {
+                    id: item.id,
+                    mode: item.mode,
+                    title: item.title || "",
+                    text: item.text,
+                    imgKey: item.imgKey,
+                    audioKey: item.audioKey,
+                    imgUrl: imgUrl,
+                    audioUrl: audioUrl,
+                    audio: audioObj
+                };
+                sequences.push(seq);
+            }
+            rebuildDOM();
+            saveToLocalStorage();
+            updateHistoryButtons();
+        }
+
+        function undoLastAction() {
+            if (isPlaying) return;
+            if (historyBusy) return;
+            if (historyStack.length > 0) {
+                historyBusy = true;
+                redoStack.push(captureState());
+                const state = historyStack.pop();
+                historyIndex = historyStack.length - 1;
+                restoreFromHistory(state).finally(() => { historyBusy = false; });
+            }
+        }
+function redoLastAction() {
+    if (isPlaying || historyBusy) return;
+    if (redoStack.length === 0) return;
+    historyBusy = true;
+    historyStack.push(captureState());
+    if (historyStack.length > 50) historyStack.shift();
+    historyIndex = historyStack.length - 1;
+    const state = redoStack.pop();
+    restoreFromHistory(state).finally(() => { historyBusy = false; });
+}
+function updateHistoryButtons() {
+    const undoBtn = document.getElementById('undoTopBtn');
+    const redoBtn = document.getElementById('redoTopBtn');
+    if (undoBtn) undoBtn.disabled = historyStack.length === 0;
+    if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+}
+
+        async function resetConfirm() {
+            if (pendingReset) {
+                if (resetTimer) clearTimeout(resetTimer);
+                pendingReset = false;
+                pushToHistory();
+                for (let seq of sequences) {
+                    if (seq.imgUrl) URL.revokeObjectURL(seq.imgUrl);
+                    if (seq.audioUrl && seq.audioUrl.startsWith('blob:')) URL.revokeObjectURL(seq.audioUrl);
+                    if (seq.audio) seq.audio.pause();
+                }
+                sequences = [];
+                document.getElementById('container').innerHTML = '';
+                createRow();
+                saveToLocalStorage();
+                const resetBtn = document.getElementById('resetBtn');
+                resetBtn.innerText = '✓';
+                setTimeout(() => { resetBtn.innerText = '🗑️'; }, 1500);
+            } else {
+                pendingReset = true;
+                const resetBtn = document.getElementById('resetBtn');
+                resetBtn.innerText = '⚠️';
+                showToast("Re-cliquez sur la corbeille pour confirmer");
+                if (resetTimer) clearTimeout(resetTimer);
+                resetTimer = setTimeout(() => {
+                    if (pendingReset) {
+                        pendingReset = false;
+                        resetBtn.innerText = '🗑️';
+                    }
+                }, 2000);
+            }
+        }
+
+        function cycleMode(id) {
+            pushToHistory();
+            let btn = document.getElementById(`btnM${id}`);
+            let modes = ["Son", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+            let next = (modes.indexOf(btn.innerText) + 1) % modes.length;
+            btn.innerText = modes[next];
+            sequences[id].mode = modes[next];
+            saveToLocalStorage();
+        }
+        function adjustDuration(id, delta) {
+            if (isPlaying) return;
+            pushToHistory();
+            const current = parseFloat(sequences[id].mode) || 3;
+            const next = Math.max(1, Math.round((current + delta) * 100) / 100);
+            sequences[id].mode = String(next);
+            smartSplitAmbiance();
+            saveToLocalStorage();
+        }
+function cycleDuration(id) {
+    if (isPlaying) return;
+    if (!sequences[id]) return;
+    if (ambianceAudio && isFinite(ambianceAudio.duration) && ambianceAudio.duration > 0) return;
+    pushToHistory();
+    const current = Math.round(parseFloat(sequences[id].mode) || 3);
+    const next = current >= 10 ? 1 : current + 1;
+    sequences[id].mode = String(next);
+    smartSplitAmbiance();
+    saveToLocalStorage();
+}
+
+        function ouvrirModal(id) {
+            const modal = document.getElementById('modal');
+            const input = document.getElementById('txtInput');
+            const titleInput = document.getElementById('titleInput');
+            if (modal) modal.dataset.seqId = String(id);
+            if (typeof currentModalId !== 'undefined') currentModalId = id;
+            if (sequences[id]) {
+                if (titleInput) titleInput.value = sequences[id].title || "";
+                if (input) input.value = sequences[id].text || "";
+            }
+            if (modal) modal.style.display = 'flex';
+            if (titleInput && input && !titleInput.value && !input.value) {
+                titleInput.focus();
+            } else if (input) {
+                input.focus();
+            }
+        }
+        
+        async function collerTexte() { 
+            const text = await navigator.clipboard.readText(); 
+            document.getElementById('txtInput').value = text; 
+        }
+        
+        function validerTexte() {
+            const modal = document.getElementById('modal');
+            const datasetId = modal && modal.dataset.seqId !== undefined && modal.dataset.seqId !== ""
+                ? parseInt(modal.dataset.seqId, 10)
+                : null;
+            const globalId = (typeof currentModalId !== 'undefined' && currentModalId !== null)
+                ? currentModalId
+                : null;
+            const modalId = datasetId !== null && !Number.isNaN(datasetId) ? datasetId : globalId;
+            if (modalId !== null && sequences[modalId]) {
+                pushToHistory();
+                const input = document.getElementById('txtInput');
+                const titleInput = document.getElementById('titleInput');
+                const val = input ? input.value : "";
+                const titleVal = titleInput ? titleInput.value.trim() : "";
+                sequences[modalId].text = val;
+                sequences[modalId].title = titleVal;
+                const btnT = document.getElementById('btnT' + modalId);
+                if (btnT) {
+                    if ((val && val.trim().length > 0) || titleVal.length > 0) {
+                        btnT.classList.add('texte-rempli');
+                    } else {
+                        btnT.classList.remove('texte-rempli');
+                    }
+                }
+                saveToLocalStorage();
+            }
+            if (modal) {
+                modal.style.display = 'none';
+                delete modal.dataset.seqId;
+            }
+            if (typeof currentModalId !== 'undefined') currentModalId = null;
+        }
+
+        function togglePlayPause() {}
+        function stopAllAndExit() {
+            if (window.__ambianceFade) {
+                clearInterval(window.__ambianceFade);
+                window.__ambianceFade = null;
+            }
+            if (ambianceAudio) {
+                ambianceAudio.pause();
+                ambianceAudio.currentTime = 0;
+            }
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            clearTimeout(typingTimeout);
+            document.body.classList.remove('fullscreen-mode');
+            if (document.fullscreenElement) document.exitFullscreen();
+            document.getElementById('bgDisplay').style.display = 'none';
+            isPlaying = false;
+        }
+        function exitApp(e) {
+            if(e) e.preventDefault();
+            sequenceAborted = true;
+            stopAllAndExit();
+        }
+        function typewriter(text, totalDurationMs) {
+            const el = document.getElementById('textDisplay');
+            el.innerHTML = "";
+            const cleanText = typeof text === 'string' ? text.trim() : "";
+            if (!cleanText) {
+                el.classList.remove('has-text');
+                el.classList.remove('flip-pulse');
+                return Promise.resolve();
+            }
+            el.classList.add('has-text');
+            // Construction complète d'abord : la boîte garde sa taille finale pendant la frappe
+            const items = [];
+            let wordEl = null;
+            for (const c of Array.from(cleanText)) {
+                if (c === '\n') {
+                    el.appendChild(document.createElement('br'));
+                    items.push({ el: null, weight: 1 });
+                    wordEl = null;
+                } else if (c === ' ' || c === '\t') {
+                    el.appendChild(document.createTextNode(' '));
+                    items.push({ el: null, weight: 1 });
+                    wordEl = null;
+                } else {
+                    if (!wordEl) {
+                        wordEl = document.createElement('span');
+                        wordEl.className = 'word';
+                        el.appendChild(wordEl);
+                    }
+                    const span = document.createElement('span');
+                    span.className = 'letter';
+                    span.textContent = c;
+                    wordEl.appendChild(span);
+                    const weight = '.!?…'.includes(c) ? 6 : (',;:'.includes(c) ? 3 : 1);
+                    items.push({ el: span, weight: weight });
+                }
+            }
+            // Durée intelligente : la frappe s'adapte à la durée de la séquence et garde un temps de lecture
+            const totalWeight = items.reduce((sum, it) => sum + it.weight, 0);
+            const totalMs = (typeof totalDurationMs === 'number' && totalDurationMs > 0)
+                ? totalDurationMs
+                : items.length * 45 + 1500;
+            const readMs = Math.min(2500, Math.max(1000, totalMs * 0.25));
+            const unitMs = Math.min(60, Math.max(8, (totalMs - readMs) / totalWeight));
+            return new Promise((resolve) => {
+                let i = 0;
+                function step() {
+                    if (sequenceAborted) {
+                        resolve();
+                        return;
+                    }
+                    if (i < items.length) {
+                        const item = items[i];
+                        if (item.el) item.el.classList.add('on');
+                        i++;
+                        typingTimeout = setTimeout(step, Math.round(unitMs * item.weight));
+                    } else {
+                        resolve();
+                    }
+                }
+                step();
+            });
+        }
+function fadeAmbiance(durationMs) {
+    if (!ambianceAudio) return;
+    if (window.__ambianceFade) clearInterval(window.__ambianceFade);
+    const startVol = ambianceAudio.volume;
+    const t0 = performance.now();
+    const total = Math.max(50, durationMs);
+    window.__ambianceFade = setInterval(() => {
+        const p = Math.min(1, (performance.now() - t0) / total);
+        try {
+            ambianceAudio.volume = Math.max(0, Math.min(1, startVol * (1 - p)));
+        } catch (e) {}
+        if (p >= 1) {
+            clearInterval(window.__ambianceFade);
+            window.__ambianceFade = null;
+        }
+    }, 50);
+}
+        async function lancerSequence() {
+            sequenceAborted = true;
+            stopAllAndExit();
+            await new Promise(r => setTimeout(r, 150));
+            const textEl = document.getElementById('textDisplay');
+            textEl.innerHTML = "";
+            textEl.classList.remove('has-text');
+            textEl.classList.remove('flip-pulse');
+            const titleEl = document.getElementById('titleDisplay');
+            titleEl.classList.remove('show');
+            titleEl.textContent = "";
+            if (window.__textFlipInterval) {
+                clearInterval(window.__textFlipInterval);
+                window.__textFlipInterval = null;
+            }
+            if (window.__textFlipTimeout) {
+                clearTimeout(window.__textFlipTimeout);
+                window.__textFlipTimeout = null;
+            }
+            const bg = document.getElementById('bgDisplay');
+            bg.style.backgroundImage = 'none';
+            bg.style.backgroundColor = '#000000';
+            bg.style.opacity = 1;
+            bg.style.transform = 'scale(1)';
+            sequenceAborted = false;
+            isPlaying = true;
+            const validSeqs = sequences.filter(s => s.imgUrl !== null);
+            if (validSeqs.length === 0) {
+                isPlaying = false;
+                return;
+            }
+            bg.style.display = 'block';
+            document.body.classList.add('fullscreen-mode');
+            if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+                try {
+                    await document.documentElement.requestFullscreen();
+                } catch (e) {}
+            }
+            if (sequenceAborted) { stopAllAndExit(); return; }
+            const hasAmbiance = !!(ambianceAudio && isFinite(ambianceAudio.duration) && ambianceAudio.duration > 0);
+            const totalAmbianceMs = hasAmbiance ? Math.round(ambianceAudio.duration * 1000) : 0;
+            // Écran noir d'abord, l'ambiance ne démarre qu'après
+            if (!sequenceAborted) {
+                await new Promise(r => setTimeout(r, 3000));
+            }
+            if (sequenceAborted) { stopAllAndExit(); return; }
+            const startTimeMs = performance.now();
+            const maxEndTimeMs = hasAmbiance ? (startTimeMs + totalAmbianceMs) : Infinity;
+            if (ambianceAudio) {
+                ambianceAudio.loop = false;
+                ambianceAudio.currentTime = 0;
+                ambianceAudio.volume = 0.25;
+                ambianceAudio.onended = () => {
+                    if (isPlaying && !sequenceAborted) {
+                        sequenceAborted = true;
+                        stopAllAndExit();
+                    }
+                };
+                ambianceAudio.play().catch(e => console.log);
+            }
+            for (let i = 0; i < validSeqs.length; i++) {
+                const seq = validSeqs[i];
+                if (sequenceAborted) break;
+                const nowMs = performance.now();
+                if (hasAmbiance && nowMs >= maxEndTimeMs - 5) break;
+                clearTimeout(typingTimeout);
+                if (window.__textFlipInterval) {
+                    clearInterval(window.__textFlipInterval);
+                    window.__textFlipInterval = null;
+                }
+                if (window.__textFlipTimeout) {
+                    clearTimeout(window.__textFlipTimeout);
+                    window.__textFlipTimeout = null;
+                }
+                textEl.innerHTML = "";
+                textEl.classList.remove('flip-pulse');
+                const hasSeqText = !!(seq.text && seq.text.trim().length > 0);
+                textEl.classList.toggle('has-text', hasSeqText);
+                if (hasSeqText) {
+                    window.__textFlipInterval = setInterval(() => {
+                        if (!textEl.classList.contains('has-text') || sequenceAborted) return;
+                        textEl.classList.remove('flip-pulse');
+                        void textEl.offsetWidth;
+                        textEl.classList.add('flip-pulse');
+                        window.__textFlipTimeout = setTimeout(() => {
+                            textEl.classList.remove('flip-pulse');
+                        }, 680);
+                    }, 8000);
+                }
+                bg.style.backgroundImage = 'url(' + seq.imgUrl + ')';
+                bg.style.opacity = 1;
+                bg.style.transform = 'scale(1)';
+                const hasSeqTitle = !!(seq.title && seq.title.trim().length > 0);
+                titleEl.classList.remove('show');
+                titleEl.textContent = hasSeqTitle ? seq.title.trim() : "";
+                if (hasSeqTitle) {
+                    void titleEl.offsetWidth;
+                    titleEl.classList.add('show');
+                }
+                const seqStartMs = performance.now();
+                const exactMs = (typeof seq._exactDurationMs === 'number' && seq._exactDurationMs > 0)
+                    ? seq._exactDurationMs
+                    : Math.round((parseFloat(seq.mode) || 3) * 1000);
+                let delay = exactMs;
+                const isLastActive = (i === validSeqs.length - 1);
+                const fadeReserveMs = (!isLastActive) ? 350 : 0;
+                if (hasAmbiance) {
+                    const remainingTotalMs = Math.max(0, Math.round(maxEndTimeMs - seqStartMs));
+                    if (isLastActive) {
+                        delay = Math.max(20, remainingTotalMs);
+                    } else {
+                        delay = Math.max(20, Math.min(delay, Math.max(20, remainingTotalMs - fadeReserveMs)));
+                    }
+                }
+                if (isLastActive && ambianceAudio) {
+                    fadeAmbiance(delay);
+                }
+                const textFinishBudgetMs = Math.max(100, delay - 1000);
+                const audioPromise = seq.audio ? (() => {
+                    currentAudio = seq.audio;
+                    seq.audio.currentTime = 0;
+                    return new Promise(r => {
+                        seq.audio.onended = r;
+                        seq.audio.play().catch(e => console.log);
+                    });
+                })() : null;
+                if (hasSeqText && !sequenceAborted) {
+                    await Promise.race([
+                        typewriter(seq.text, delay),
+                        new Promise(r => setTimeout(r, textFinishBudgetMs))
+                    ]);
+                }
+                if (sequenceAborted) break;
+                const elapsedInSeqMs = performance.now() - seqStartMs;
+                const waitLeftMs = Math.max(0, Math.round(delay - elapsedInSeqMs));
+                if (audioPromise) {
+                    await Promise.race([
+                        audioPromise,
+                        new Promise(r => setTimeout(r, waitLeftMs))
+                    ]);
+                } else if (waitLeftMs > 0) {
+                    await new Promise(r => setTimeout(r, waitLeftMs));
+                }
+                if (seq.audio) {
+                    seq.audio.onended = null;
+                    seq.audio.pause();
+                }
+                if (sequenceAborted) break;
+                if (isLastActive) {
+                    if (hasAmbiance) {
+                        const finalLeftMs = Math.max(0, Math.round(maxEndTimeMs - performance.now()));
+                        if (finalLeftMs > 0) {
+                            await new Promise(r => setTimeout(r, finalLeftMs));
+                        }
+                    }
+                    break;
+                }
+                if (hasAmbiance && performance.now() >= maxEndTimeMs - 5) break;
+                bg.style.opacity = 0;
+                bg.style.transform = 'scale(1.03)';
+                const fadeMs = hasAmbiance
+                    ? Math.min(fadeReserveMs, Math.max(0, Math.round(maxEndTimeMs - performance.now())))
+                    : fadeReserveMs;
+                if (fadeMs > 0) {
+                    await new Promise(r => setTimeout(r, fadeMs));
+                }
+            }
+            if (window.__textFlipInterval) {
+                clearInterval(window.__textFlipInterval);
+                window.__textFlipInterval = null;
+            }
+            if (window.__textFlipTimeout) {
+                clearTimeout(window.__textFlipTimeout);
+                window.__textFlipTimeout = null;
+            }
+            textEl.classList.remove('flip-pulse');
+            if (ambianceAudio && !sequenceAborted) ambianceAudio.pause();
+            if (!sequenceAborted) stopAllAndExit();
+            else isPlaying = false;
+        }
+
+        (async () => {
+            await openDB();
+            const loaded = await loadFromLocalStorage();
+            if (!loaded) {
+                createRow();
+            }
+            if (loaded) {
+                purgeOrphanBlobs().catch(() => {});
+            }
+        })();
+        initDragReorder();
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && isPlaying && !sequenceAborted) {
+                sequenceAborted = true;
+                stopAllAndExit();
+            }
+        });
+    </script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));}</script>
+
+<style id="mastercode-native-style">
+html{
+  touch-action:manipulation;
+  overscroll-behavior:none;
+}
+body{
+  overscroll-behavior:none;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+input,textarea,[contenteditable="true"]{
+  -webkit-user-select:text;
+  user-select:text;
+}
+</style>
+<script>
+(function(){
+  document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, { passive:false });
+  document.addEventListener('contextmenu', function(e){
+    var t = e.target;
+    if(t && t.closest && t.closest('input,textarea,[contenteditable="true"]')) return;
+    e.preventDefault();
+  });
+})();
+</script>
+    
+
+<script>
+(function(){
+  if(!navigator.vibrate) return;
+  document.addEventListener('click', function(e){
+    var t = e.target && e.target.closest ? e.target.closest('button,[role="button"],a,input[type="button"],input[type="submit"]') : null;
+    if(t) navigator.vibrate(8);
+  }, true);
+})();
+</script>
+    
+
+<script>
+(function(){
+  var DARK = '#000000';
+  var LIGHT = '#ffffff';
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  function apply(){
+    var tag = document.querySelector('meta[name="theme-color"]');
+    if(!tag){
+      tag = document.createElement('meta');
+      tag.setAttribute('name', 'theme-color');
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', mq.matches ? DARK : LIGHT);
+  }
+  apply();
+  if(mq.addEventListener) mq.addEventListener('change', apply);
+})();
+</script>
+    
+
+<style id="mastercode-install-style">
+#mastercode-install{
+  position:fixed;
+  left:16px;
+  right:16px;
+  bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index:2147483000;
+  width:auto;
+  max-width:460px;
+  margin:0 auto;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+#mastercode-install[hidden],
+#mastercode-install-panel[hidden]{
+  display:none!important;
+}
+#mastercode-install-button{
+  width:100%;
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:11px;
+  padding:13px 20px;
+  border:1px solid rgba(255,224,155,.5);
+  border-radius:17px;
+  color:#17130a;
+  background:linear-gradient(135deg,#f5d88f 0%,#e8b84c 48%,#d6a23a 100%);
+  box-shadow:0 9px 30px rgba(0,0,0,.3),0 0 24px rgba(232,184,76,.16);
+  font-size:13px;
+  font-weight:850;
+  letter-spacing:.045em;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .15s ease,filter .15s ease;
+}
+#mastercode-install-button:active{
+  transform:scale(.98);
+  filter:brightness(.95);
+}
+#mastercode-install-button svg{
+  width:21px;
+  height:21px;
+  flex-shrink:0;
+}
+#mastercode-install-panel{
+  margin-bottom:10px;
+  padding:17px;
+  color:#f8fafc;
+  background:rgba(17,19,25,.97);
+  border:1px solid rgba(232,184,76,.3);
+  border-radius:18px;
+  box-shadow:0 14px 45px rgba(0,0,0,.48);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+#mastercode-install-panel .mc-install-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+  color:#f3d58f;
+  font-size:14px;
+  font-weight:850;
+}
+#mastercode-install-panel .mc-install-close{
+  width:30px;
+  height:30px;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:9px;
+  color:#cbd5e1;
+  background:rgba(255,255,255,.06);
+  font-size:19px;
+  cursor:pointer;
+}
+#mastercode-install-panel .mc-install-step{
+  display:flex;
+  align-items:flex-start;
+  gap:11px;
+  margin-top:12px;
+  color:#cbd5e1;
+  font-size:12px;
+  line-height:1.55;
+}
+#mastercode-install-panel .mc-install-number{
+  width:25px;
+  height:25px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  border-radius:8px;
+  color:#e8b84c;
+  background:rgba(232,184,76,.12);
+  font-size:11px;
+  font-weight:900;
+}
+#mastercode-install-panel strong{
+  color:#fff;
+}
+#mastercode-install-panel .mc-install-note{
+  margin-top:13px;
+  padding-top:11px;
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#94a3b8;
+  font-size:10px;
+  line-height:1.5;
+}
+@media(min-width:700px){
+  #mastercode-install{
+    bottom:24px;
+  }
+}
+</style>
+
+<div id="mastercode-install" hidden>
+  <div id="mastercode-install-panel" hidden>
+    <div class="mc-install-title">
+      <span>Installer sur votre téléphone</span>
+      <button type="button" class="mc-install-close" id="mastercode-install-close" aria-label="Fermer">×</button>
+    </div>
+    <div class="mc-install-step">
+      <span class="mc-install-number">1</span>
+      <span>Appuyez sur le bouton <strong>Partager</strong> de Safari.</span>
+    </div>
+    <div class="mc-install-step">
+      <span class="mc-install-number">2</span>
+      <span>Faites défiler les options et choisissez <strong>Sur l’écran d’accueil</strong>.</span>
+    </div>
+    <div class="mc-install-step">
+      <span class="mc-install-number">3</span>
+      <span>Appuyez sur <strong>Ajouter</strong> pour installer l’application.</span>
+    </div>
+    <div class="mc-install-note">L’application sera accessible directement depuis l’écran d’accueil de votre iPhone.</div>
+  </div>
+
+  <button type="button" id="mastercode-install-button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="4" y="3" width="16" height="18" rx="3"/>
+      <path d="M12 8v8M8.5 12.5 12 16l3.5-3.5"/>
+    </svg>
+    <span>INSTALLER L’APPLICATION</span>
+  </button>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  const root = document.getElementById('mastercode-install');
+  const button = document.getElementById('mastercode-install-button');
+  const panel = document.getElementById('mastercode-install-panel');
+  const close = document.getElementById('mastercode-install-close');
+
+  if(!root || !button || !panel) return;
+
+  const standalone = window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  if(standalone) return;
+
+  const ua = navigator.userAgent || '';
+  const isIOS = /iphone|ipad|ipod/i.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  let deferredPrompt = null;
+
+  if(isIOS){
+    root.hidden = false;
+  }
+
+  window.addEventListener('beforeinstallprompt', function(event){
+    event.preventDefault();
+    deferredPrompt = event;
+    root.hidden = false;
+    panel.hidden = true;
+  });
+
+  button.addEventListener('click', async function(){
+    if(deferredPrompt){
+      const promptEvent = deferredPrompt;
+      deferredPrompt = null;
+
+      try{
+        await promptEvent.prompt();
+        const result = await promptEvent.userChoice;
+
+        if(result && result.outcome === 'accepted'){
+          root.hidden = true;
+          panel.hidden = true;
+        }
+      }catch(error){
+        console.error('Installation PWA:', error);
+      }
+      return;
+    }
+
+    if(isIOS){
+      panel.hidden = !panel.hidden;
+    }
+  });
+
+  if(close){
+    close.addEventListener('click', function(){
+      panel.hidden = true;
+    });
+  }
+
+  window.addEventListener('appinstalled', function(){
+    root.hidden = true;
+    panel.hidden = true;
+    deferredPrompt = null;
+  });
+})();
+</script>
+    
+</body>
+</html>
